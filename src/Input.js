@@ -1,6 +1,6 @@
 import clsx from "clsx";
-import TextField from "@material-ui/core/TextField";
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import TextField from "@mui/material/TextField";
+import { makeStyles } from '/styles@material-ui/styles';
 
 const useInputStyles = makeStyles((theme) => ({
   input: {

@@ -1,16 +1,20 @@
 import React, { useRef } from "react";
 import { useFormik } from "formik";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import Box from "@material-ui/core/Box";
-import Paper from "@material-ui/core/Paper";
-import Typography from "@material-ui/core/Typography";
+import { makeStyles } from '@material-ui/styles';
+import Box from "@mui/material/Box";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
 
-import MenuItem from "@material-ui/core/MenuItem";
+import MenuItem from "@mui/material/MenuItem";
 
-import Select from "@material-ui/core/Select";
+import Select from "@mui/material/Select";
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+
+// import MuiPhoneNumber from "mui-phone-input-ssr";
 
 import { InputWrapper } from "./Input";
 import { Button } from "./Button";
@@ -90,6 +94,17 @@ const RegistrationForm = () => {
 
   const classes = useRegistrationFormStyles({ status });
 
+  function handleOnChange(value) {
+    this.setState({
+      phone: value
+    });
+  }
+  const [alignment, setAlignment] = React.useState('web');
+
+  const handleGroupChange = (event, newAlignment) => {
+    setAlignment(newAlignment);
+  };
+
   return (
     <Box className={classes.wrapper}>
       <Box className={classes.innerWrapper}>
@@ -147,6 +162,17 @@ const RegistrationForm = () => {
                 value={values.lastName}
                 error={touched.lastName && errors.lastName}
               />
+              <ToggleButtonGroup
+                color="primary"
+                value={alignment}
+                exclusive
+                onChange={handleGroupChange}
+                aria-label="Platform"
+              >
+                <ToggleButton value="web">Web</ToggleButton>
+                <ToggleButton value="android">Android</ToggleButton>
+                <ToggleButton value="ios">iOS</ToggleButton>
+              </ToggleButtonGroup>
 
               <InputWrapper
                 variant="outlined"
@@ -158,29 +184,36 @@ const RegistrationForm = () => {
                 value={values.emailAddress}
                 error={touched.emailAddress && errors.emailAddress}
               />
-
-              <InputWrapper
+{/* 
+              <MuiPhoneNumber
+                fullWidth
                 variant="outlined"
+                defaultCountry={"ma"}
+                onChange={handleOnChange}
                 name="telephoneNumber"
                 label="Telephone Number"
-                type="tel"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.telephoneNumber}
                 error={touched.telephoneNumber && errors.telephoneNumber}
               />
+*/}
               <Select
+                fullWidth
                 variant="outlined"
                 name="selectedSession"
-                label="Age"
+                label="Select your schedule"
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.selectedSession}
                 error={touched.selectedSession && errors.selectedSession}
               >
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
+                <MenuItem value={"first_session"}>
+                  12, 18 et 19 mars 2023
+                </MenuItem>
+                <MenuItem value={"second_session"}>
+                  26 mars, 1 et 2 avril 2023
+                </MenuItem>
+                <MenuItem value={"third_session"}>
+                  9, 15 et 16 avril 2023
+                </MenuItem>
               </Select>
               <Typography variant="body" gutterBottom>
                 By submitting this form, you agree to our Terms and conditions
