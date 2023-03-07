@@ -1,0 +1,209 @@
+import React, { useRef } from "react";
+import { useFormik } from "formik";
+
+import makeStyles from "@material-ui/core/styles/makeStyles";
+import Box from "@material-ui/core/Box";
+import Paper from "@material-ui/core/Paper";
+import Typography from "@material-ui/core/Typography";
+
+import MenuItem from "@material-ui/core/MenuItem";
+
+import Select from "@material-ui/core/Select";
+
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+
+import { InputWrapper } from "./Input";
+import { Button } from "./Button";
+import { validationSchema, printNiceAlert } from "./util";
+
+// styling for registration form
+const useRegistrationFormStyles = makeStyles((theme) => ({
+  wrapper: {
+    width: "100vw",
+    height: "100vh",
+    perspective: "1000px",
+    background: "url(https://i.redd.it/bf1osbvddz6z.jpg)",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: " no-repeat",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  innerWrapper: ({ status }) => ({
+    width: "450px",
+    transition: "transform .8s",
+    transformStyle: "preserve-3d",
+    transform: status === "complete" ? "rotateY(-180deg)" : null
+  }),
+  form: {
+    backfaceVisibility: "hidden",
+    transformStyle: "preserve-3d"
+  },
+  completed: {
+    position: "absolute",
+    transform: "rotateY(180deg)",
+    backfaceVisibility: "hidden"
+  }
+}));
+
+const RegistrationForm = () => {
+  // setting ref to the form to get the height/width so the flipped side
+  // can have the same height
+  const formRef = useRef(null);
+
+  // using formik to handle form handling and submissions
+  const {
+    values,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+    isValid,
+    errors,
+    touched,
+    isSubmitting,
+    status
+  } = useFormik({
+    validateOnMount: true,
+    validationSchema,
+    onSubmit: (values, actions) => {
+      // submit form data to server
+      // when returning a promise to formiks 'onSubmit', the 'isSubmitting' is automatically updated when promise is resolved
+      return new Promise((res) => {
+        setTimeout(() => {
+          alert(printNiceAlert(values));
+          // update status to complete to rotate form
+          actions.setStatus("complete");
+          res();
+        }, 2000);
+      });
+    },
+    // initializing form values as to not switch from uncontrolled to controlled
+    initialValues: {
+      firstName: "",
+      lastName: "",
+      emailAddress: "",
+      telephoneNumber: "",
+      selectedSession: ""
+    }
+  });
+
+  const classes = useRegistrationFormStyles({ status });
+
+  return (
+    <Box className={classes.wrapper}>
+      <Box className={classes.innerWrapper}>
+        {/* back side of the form, status is put here */}
+        <Paper className={classes.completed}>
+          <Box
+            width={formRef.current?.clientWidth}
+            height={formRef.current?.clientHeight}
+            bgcolor="success.main"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            flexDirection="column"
+            color="primary.contrastText"
+            fontSize="h2.fontSize"
+          >
+            <CheckCircleIcon fontSize="inherit" />
+            <Box mb={1} />
+            <Typography variant="h4">Form Submitted</Typography>
+          </Box>
+        </Paper>
+
+        {/* front side of the form, user fills here */}
+        <Paper ref={formRef} elevation={3} className={classes.form}>
+          <form onSubmit={handleSubmit}>
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              p={3}
+            >
+              <Typography variant="h4" gutterBottom>
+                Registration Form
+              </Typography>
+              <Typography variant="body" gutterBottom>
+                Welcome to our training. Please provide your information
+              </Typography>
+
+              <InputWrapper
+                variant="outlined"
+                name="firstName"
+                label="First Name"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.firstName}
+                error={touched.firstName && errors.firstName}
+              />
+
+              <InputWrapper
+                variant="outlined"
+                name="lastName"
+                label="Last Name"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.lastName}
+                error={touched.lastName && errors.lastName}
+              />
+
+              <InputWrapper
+                variant="outlined"
+                name="emailAddress"
+                label="Email Address"
+                type="email"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.emailAddress}
+                error={touched.emailAddress && errors.emailAddress}
+              />
+
+              <InputWrapper
+                variant="outlined"
+                name="telephoneNumber"
+                label="Telephone Number"
+                type="tel"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.telephoneNumber}
+                error={touched.telephoneNumber && errors.telephoneNumber}
+              />
+              <Select
+                variant="outlined"
+                name="selectedSession"
+                label="Age"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.selectedSession}
+                error={touched.selectedSession && errors.selectedSession}
+              >
+                <MenuItem value={10}>Ten</MenuItem>
+                <MenuItem value={20}>Twenty</MenuItem>
+                <MenuItem value={30}>Thirty</MenuItem>
+              </Select>
+              <Typography variant="body" gutterBottom>
+                By submitting this form, you agree to our Terms and conditions
+                of use.
+              </Typography>
+
+              <Box mt={3}>
+                <Button
+                  type="submit"
+                  color="primary"
+                  variant="contained"
+                  disabled={!isValid || isSubmitting}
+                  loading={isSubmitting}
+                >
+                  Submit
+                </Button>
+              </Box>
+            </Box>
+          </form>
+        </Paper>
+      </Box>
+    </Box>
+  );
+};
+
+export default RegistrationForm;
